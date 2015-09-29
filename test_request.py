@@ -53,3 +53,14 @@ def foo(ar, *args, **kwargs):
 
 
 res = foo((2016, 01, 01), 67676, 66, n=11)
+
+@coerce_to(("arg1", {"some_key1": {'key': int}, "some_key2": str},))
+def foo(arg1):
+    assert isinstance(arg1['some_key1']['key'], int)
+    assert arg1['some_key1']['key'] == 5
+    return arg1
+
+d = {"some_key1": {'key': '5'}, "some_key2": 10}
+result = foo(d)
+print result
+
