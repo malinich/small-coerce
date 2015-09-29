@@ -1,3 +1,4 @@
+from datetime import date
 from validate import coerce_to
 
 
@@ -17,7 +18,7 @@ def v1(x, y):
     return x + y
 
 
-res = v1((3, 4), 34)
+res = v1((3, 4), '34')
 assert 41 == res
 
 
@@ -32,3 +33,23 @@ d = {"some_key1": '5', "some_key2": 10}
 result = foo(d)
 assert result['some_key1'] + 10 == 15
 assert result['some_key2'] + '10' == '1010'
+
+@coerce_to(('ar', date))
+def foo(ar):
+    assert isinstance(ar, date)
+    return ar
+
+
+res = foo((2016, 01, 01))
+
+
+@coerce_to(('ar', date))
+def foo(ar, *args, **kwargs):
+    assert isinstance(ar, date)
+    print(ar)
+    print(args)
+    print(kwargs)
+    return ar
+
+
+res = foo((2016, 01, 01), 67676, 66, n=11)

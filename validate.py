@@ -26,7 +26,7 @@ def coerce_to(*fields, **kwargs):
 
     def validate(kwargs):
 
-        f, val = kwargs[0], (kwargs[1], )
+        f, val = kwargs[0], (kwargs[1],)
         try:
             mapped = call_func(field_map[f], *val)
         except (ValueError, TypeError) as e:
@@ -36,8 +36,15 @@ def coerce_to(*fields, **kwargs):
     def wrap(func):
         def wrap1(*args, **kwargs):
             allar = inspect.getcallargs(func, *args, **kwargs)
-            map_kwargs = dict(tuple(map(validate, allar.items())))
-            return func(**map_kwargs)
+            d = dict((k, v) for k, v in allar.items() if k in field_map)
+            map_kwargs = dict(tuple(map(validate, d.items())))
+            allar.update(map_kwargs)
+
+            a=inspect.getargspec(func)
+
+            if a.varargs in allar:
+                return func(*map_kwargs.values() + list(allar[a.varargs]), **allar[a.keywords])
+            return func(**allar)
         return wrap1
     return wrap
 
